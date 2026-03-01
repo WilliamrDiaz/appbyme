@@ -1,3 +1,28 @@
 <resources>
     <string name="app_name">ByMe</string>
+    <string name="app_description">Servicios a tu alrededor</string>
+
+    <!-- Auth -->
+    <string name="email">Correo electrónico</string>
+    <string name="password">Contraseña</string>
+    <string name="login">Iniciar Sesión</string>
+    <string name="login_with_google">Continuar con Google</string>
+    <string name="no_account">¿No tienes cuenta? </string>
+    <string name="register">Regístrate</string>
+    <string name="or">o</string>
+
+    <!-- Register -->
+    <string name="name">Nombre</string>
+    <string name="lastname">Apellido</string>
+    <string name="phone">Teléfono</string>
+    <string name="confirm_password">Confirmar contraseña</string>
+    <string name="already_have_account">¿Ya tienes cuenta? </string>
+    <string name="sign_in">Inicia sesión</string>
+    <string name="passwords_do_not_match">Las contraseñas no coinciden</string>
+
+    <!-- Home -->
+    <string name="search_hint">Buscar por categoría (ej. Plomero)</string>
+    <string name="map_label">Mapa</string>
+    <string name="professionals_label">Profesionales - Todas las categorías</string>
+
 </resources>
