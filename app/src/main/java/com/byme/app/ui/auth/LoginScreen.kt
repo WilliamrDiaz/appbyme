@@ -21,6 +21,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.byme.app.R
@@ -31,10 +32,10 @@ import com.byme.app.viewmodel.AuthViewModel
 fun LoginScreen(
     onNavigateToHome: () -> Unit,
     onNavigateToRegister: () -> Unit,
-    authViewModel: AuthViewModel = viewModel()
+    authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val authState by authViewModel.authState.collectAsStateWithLifecycle()
+    val authState by authViewModel.uiState.collectAsStateWithLifecycle()
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -43,8 +44,8 @@ fun LoginScreen(
     // Web Client ID de Firebase
     val webClientId = ""
 
-    LaunchedEffect(authState) {
-        if (authState is AuthState.Success) {
+    LaunchedEffect(authState.isSuccess) {
+        if (authState.isLoading) {
             authViewModel.resetState()
             onNavigateToHome()
         }
@@ -118,9 +119,9 @@ fun LoginScreen(
                 .fillMaxWidth()
                 .height(50.dp),
             shape = RoundedCornerShape(12.dp),
-            enabled = authState !is AuthState.Loading
+            enabled = !authState.isLoading
         ) {
-            if (authState is AuthState.Loading) {
+            if (authState.isLoading) {
                 CircularProgressIndicator(
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(24.dp)
@@ -154,7 +155,7 @@ fun LoginScreen(
                 .fillMaxWidth()
                 .height(50.dp),
             shape = RoundedCornerShape(12.dp),
-            enabled = authState !is AuthState.Loading
+            enabled = !authState.isLoading
         ) {
             Text(stringResource(R.string.login_with_google), fontSize = 16.sp)
         }
@@ -174,13 +175,21 @@ fun LoginScreen(
         }
 
         // Error
-        if (authState is AuthState.Error) {
+        authState.errorMessage?.let { error ->
             Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = (authState as AuthState.Error).message,
-                color = MaterialTheme.colorScheme.error,
-                fontSize = 14.sp
-            )
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer
+                ),
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = error,
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 14.sp
+                )
+            }
         }
     }
 }

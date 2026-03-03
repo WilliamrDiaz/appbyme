@@ -3,23 +3,25 @@ package com.byme.app.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.byme.app.data.remote.repository.ProfessionalRepository
+import com.byme.app.domain.usecase.GetProfessionalsUseCase
+import com.byme.app.domain.usecase.SearchProfessionalsUseCase
 import com.byme.app.model.Professional
+import com.byme.app.ui.state.HomeUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val getProfessionalsUseCase: GetProfessionalsUseCase,
+    private val searchProfessionalsUseCase: SearchProfessionalsUseCase,
+) : ViewModel() {
 
-    private val repository = ProfessionalRepository()
-
-    private val _professionals = MutableStateFlow<List<Professional>>(emptyList())
-    val professionals: StateFlow<List<Professional>> = _professionals
-
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
-
-    private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> = _searchQuery
+    private val _uiState = MutableStateFlow(HomeUiState())
+    val uiState: StateFlow<HomeUiState> = _uiState
 
     init {
         loadProfessionals()
@@ -27,21 +29,47 @@ class HomeViewModel : ViewModel() {
 
     fun loadProfessionals() {
         viewModelScope.launch {
-            _isLoading.value = true
-            _professionals.value = repository.getAllProfessionals()
-            _isLoading.value = false
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            getProfessionalsUseCase().fold(
+                onSuccess = { professionals ->
+                    _uiState.update {
+                        it.copy(isLoading = false, professionals = professionals)
+                    }
+                },
+                onFailure = { error ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = error.message ?: "Error al cargar profesionales"
+                        )
+                    }
+                }
+            )
         }
     }
 
     fun onSearchQueryChange(query: String) {
-        _searchQuery.value = query
+        _uiState.update { it.copy(searchQuery = query) }
         viewModelScope.launch {
             if (query.isEmpty()) {
                 loadProfessionals()
             } else {
-                _isLoading.value = true
-                _professionals.value = repository.searchProfessionals(query)
-                _isLoading.value = false
+                _uiState.update { it.copy(isLoading = true) }
+                searchProfessionalsUseCase(query).fold(
+                    onSuccess = { professionals ->
+                        _uiState.update {
+                            it.copy(isLoading = false, professionals = professionals)
+                        }
+                    },
+                    onFailure = { error ->
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = error.message ?: "Error en la búsqueda"
+                            )
+                        }
+                    }
+                )
             }
         }
     }

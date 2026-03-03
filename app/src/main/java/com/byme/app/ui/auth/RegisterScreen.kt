@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.byme.app.R
@@ -29,9 +30,9 @@ import com.byme.app.viewmodel.AuthViewModel
 fun RegisterScreen(
     onNavigateToHome: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    authViewModel: AuthViewModel = viewModel()
+    authViewModel: AuthViewModel = hiltViewModel()
 ) {
-    val authState by authViewModel.authState.collectAsStateWithLifecycle()
+    val authState by authViewModel.uiState.collectAsStateWithLifecycle()
 
     var name by remember { mutableStateOf("") }
     var lastname by remember { mutableStateOf("") }
@@ -44,8 +45,8 @@ fun RegisterScreen(
     var passwordError by remember { mutableStateOf("") }
     val passwordsDoNotMatch = stringResource(R.string.passwords_do_not_match)
 
-    LaunchedEffect(authState) {
-        if (authState is AuthState.Success) {
+    LaunchedEffect(authState.isSuccess) {
+        if (authState.isSuccess) {
             authViewModel.resetState()
             onNavigateToHome()
         }
@@ -196,16 +197,16 @@ fun RegisterScreen(
                     passwordError = passwordsDoNotMatch
                 } else {
                     passwordError = ""
-                    authViewModel.registerWithEmail(email, password)
+                    authViewModel.registerWithEmail(name, lastname, email, phone, password)
                 }
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
             shape = RoundedCornerShape(12.dp),
-            enabled = authState !is AuthState.Loading
+            enabled = !authState.isLoading
         ) {
-            if (authState is AuthState.Loading) {
+            if (authState.isLoading) {
                 CircularProgressIndicator(
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(24.dp)
@@ -230,10 +231,10 @@ fun RegisterScreen(
         }
 
         // Error de Firebase
-        if (authState is AuthState.Error) {
+        authState.errorMessage?.let { error ->
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = (authState as AuthState.Error).message,
+                text = error,
                 color = MaterialTheme.colorScheme.error,
                 fontSize = 14.sp
             )

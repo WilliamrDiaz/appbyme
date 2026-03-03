@@ -17,27 +17,25 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.byme.app.R
-import com.byme.app.model.Professional
+import com.byme.app.domain.model.User
 import com.byme.app.viewmodel.HomeViewModel
 
 @Composable
 fun HomeScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToProfessionalDetail: (String) -> Unit,
-    homeViewModel: HomeViewModel = viewModel()
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
-    val professionals by homeViewModel.professionals.collectAsStateWithLifecycle()
-    val isLoading by homeViewModel.isLoading.collectAsStateWithLifecycle()
-    val searchQuery by homeViewModel.searchQuery.collectAsStateWithLifecycle()
+    val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         bottomBar = { BottomNavigationBar(onNavigateToLogin) }
@@ -52,7 +50,7 @@ fun HomeScreen(
 
             // Barra de búsqueda
             OutlinedTextField(
-                value = searchQuery,
+                value = uiState.searchQuery,
                 onValueChange = { homeViewModel.onSearchQueryChange(it) },
                 placeholder = { Text(stringResource(R.string.search_hint)) },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
@@ -119,14 +117,14 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             // verificacion en la base de datos para los datos de los profesionales
-            if (isLoading) {
+            if (uiState.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
                 }
-            } else if (professionals.isEmpty()) {
+            } else if (uiState.professionals.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -139,7 +137,7 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(professionals) { professional ->
+                    items(uiState.professionals) { professional ->
                         ProfessionalCard(
                             professional = professional,
                             onClick = { onNavigateToProfessionalDetail(professional.id) }
@@ -153,7 +151,7 @@ fun HomeScreen(
 
 @Composable
 fun ProfessionalCard(
-    professional: Professional,
+    professional: User,
     onClick: () -> Unit
 ) {
     Card(
@@ -178,7 +176,7 @@ fun ProfessionalCard(
                 color = MaterialTheme.colorScheme.primaryContainer
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    if (professional.imageUrl.isEmpty()){
+                    if (professional.photoUrl.isEmpty()){
                         Icon(
                             imageVector = Icons.Default.Person,
                             contentDescription = null,
@@ -187,7 +185,7 @@ fun ProfessionalCard(
                         )
                     } else {
                         AsyncImage(
-                            model = professional.imageUrl,
+                            model = professional.photoUrl,
                             contentDescription = null,
                             modifier = Modifier.size(60.dp).clip(CircleShape),
                         )
