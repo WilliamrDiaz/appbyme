@@ -4,12 +4,15 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.byme.app.ui.auth.LoginScreen
 import com.byme.app.ui.auth.RegisterScreen
 import com.byme.app.ui.auth.SplashScreen
 import com.byme.app.ui.home.HomeScreen
+import com.byme.app.ui.professional.ProfessionalDetailScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -71,9 +74,16 @@ fun NavGraph(navController: NavHostController) {
         composable(NavRoutes.SEARCH_RESULTS) {
             // SearchResultsScreen()
         }
-        composable(NavRoutes.PROFESSIONAL_DETAIL) { backStackEntry ->
-            val professionalId = backStackEntry.arguments?.getString("professionalId")
-            // ProfessionalDetailScreen(professionalId)
+        composable(
+            route = NavRoutes.PROFESSIONAL_DETAIL,
+            arguments = listOf(navArgument("professionalId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val professionalId = backStackEntry.arguments?.getString("professionalId") ?: ""
+            ProfessionalDetailScreen(
+                professionalId = professionalId,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToLogin = { navController.navigate(NavRoutes.LOGIN) }
+            )
         }
         composable(NavRoutes.CHAT_LIST) {
             // ChatListScreen()

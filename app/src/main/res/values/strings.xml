@@ -25,4 +25,11 @@
     <string name="map_label">Mapa</string>
     <string name="professionals_label">Profesionales - Todas las categorías</string>
 
+    <!-- Professional Detail -->
+    <string name="professional_detail">Detalles Profesional</string>
+    <string name="description_professional">Descripción</string>
+    <string name="contact">Contactar</string>
+    <string name="services">Servicios</string>
+    <string name="schedules">Horarios</string>
+    <string name="reviews">Reseñas</string>
 </resources>
