@@ -1,5 +1,6 @@
 package com.byme.app.data.remote.repository
 
+import android.util.Log
 import com.byme.app.domain.model.Service
 import com.byme.app.domain.repository.ServiceRepositoryInterface
 import com.google.firebase.firestore.FirebaseFirestore
@@ -20,7 +21,10 @@ class ServiceRepositoryImpl(
             val services = snapshot.documents.mapNotNull { doc ->
                 try {
                     doc.toObject(Service::class.java)?.copy(id = doc.id)
-                } catch (e: Exception) { null }
+                } catch (e: Exception) {
+                    Log.e("ServiceRepositoryImpl", "Error converting document to Service", e)
+                    null
+                }
             }
             Result.success(services)
         } catch (e: Exception) {

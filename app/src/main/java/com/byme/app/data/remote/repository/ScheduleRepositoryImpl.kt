@@ -1,5 +1,6 @@
 package com.byme.app.data.remote.repository
 
+import android.util.Log
 import com.byme.app.domain.model.Schedule
 import com.byme.app.domain.repository.ScheduleRepositoryInterface
 import com.google.firebase.firestore.FirebaseFirestore
@@ -21,7 +22,10 @@ class ScheduleRepositoryImpl (
             val schedules = snapshot.documents.mapNotNull { doc ->
                 try {
                     doc.toObject(Schedule::class.java)?.copy(id = doc.id)
-                } catch (e: Exception) { null }
+                } catch (e: Exception) {
+                    Log.e("ScheduleRepositoryImpl", "Error converting document to Schedule", e)
+                    null
+                }
             }
             Result.success(schedules)
         } catch (e: Exception) {
