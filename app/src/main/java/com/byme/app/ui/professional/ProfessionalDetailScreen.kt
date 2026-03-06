@@ -2,11 +2,10 @@ package com.byme.app.ui.professional
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
@@ -23,11 +22,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.byme.app.R
 import com.byme.app.domain.model.Review
+import com.byme.app.domain.model.Schedule
+import com.byme.app.domain.model.Service
 import com.byme.app.domain.model.User
 import com.byme.app.ui.home.BottomNavigationBar
 import com.byme.app.viewmodel.ProfessionalDetailViewModel
@@ -54,7 +55,7 @@ fun ProfessionalDetailScreen(
                 title = { Text(stringResource(R.string.professional_detail)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
                     }
                 },
                 actions = {
@@ -80,6 +81,8 @@ fun ProfessionalDetailScreen(
                     ProfessionalDetailContent(
                         professional = uiState.professional!!,
                         reviews = uiState.reviews,
+                        services = uiState.services,
+                        schedules = uiState.schedules,
                         selectedTab = uiState.selectedTab,
                         onTabSelected = { viewModel.onTabSelected(it) },
                         onContactClick = {
@@ -108,6 +111,8 @@ fun ProfessionalDetailScreen(
 fun ProfessionalDetailContent(
     professional: User,
     reviews: List<Review>,
+    services: List<Service>,
+    schedules: List<Schedule>,
     selectedTab: Int,
     onTabSelected: (Int) -> Unit,
     onContactClick: () -> Unit,
@@ -185,7 +190,7 @@ fun ProfessionalDetailContent(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "${professional.reviewCount} Reseñas",
+                        text = "${professional.reviewCount} ${stringResource(R.string.reviews)}",
                         fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
@@ -201,7 +206,7 @@ fun ProfessionalDetailContent(
                         containerColor = MaterialTheme.colorScheme.primary
                     )
                 ) {
-                    Text("Contactar", fontWeight = FontWeight.Medium)
+                    Text(stringResource(R.string.contact), fontWeight = FontWeight.Medium)
                 }
             }
         }
@@ -217,7 +222,7 @@ fun ProfessionalDetailContent(
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
-            text = professional.description.ifEmpty { "Sin descripción disponible" },
+            text = professional.description.ifEmpty { stringResource(R.string.no_description) },
             fontSize = 14.sp,
             lineHeight = 22.sp,
             color = MaterialTheme.colorScheme.onSurface
@@ -265,15 +270,15 @@ fun ProfessionalDetailContent(
 
         // Contenido del tab seleccionado
         when (selectedTab) {
-            0 -> ServicesTab(professional)
-            1 -> SchedulesTab(professional)
+            0 -> ServicesTab(services)
+            1 -> SchedulesTab(schedules)
             2 -> ReviewsTab(reviews)
         }
     }
 }
 
 @Composable
-fun ServicesTab(professional: User) {
+fun ServicesTab(services: List<Service>) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -291,7 +296,7 @@ fun ServicesTab(professional: User) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
+        /*Text(
             text = professional.experience.ifEmpty { "Sin experiencia registrada" },
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold
@@ -313,12 +318,40 @@ fun ServicesTab(professional: User) {
             text = professional.phone.ifEmpty { "No disponible" },
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-        )
+        )*/
+
+        if (services.isEmpty()){
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.no_services_register),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+            }
+        } else {
+            services.forEach { service ->
+                Text(
+                    text = service.name,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = service.description,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
     }
 }
 
 @Composable
-fun SchedulesTab(professional: User) {
+fun SchedulesTab(schedules: List<Schedule>) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -336,7 +369,7 @@ fun SchedulesTab(professional: User) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Disponibilidad", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+        /*Text(text = "Disponibilidad", fontSize = 22.sp, fontWeight = FontWeight.Bold)
         Text(
             text = if (professional.available) "Disponible" else "No disponible",
             fontSize = 14.sp,
@@ -368,7 +401,34 @@ fun SchedulesTab(professional: User) {
             text = "Fuera de servicio",
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-        )
+        )*/
+        if (schedules.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.no_schedules_register),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+            }
+        } else {
+            schedules.forEach { schedule ->
+                Text(
+                    text = schedule.day,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = schedule.hours,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
     }
 }
 
@@ -399,7 +459,7 @@ fun ReviewsTab(reviews: List<Review>) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Aún no hay reseñas",
+                    text = stringResource(R.string.no_reviews_register),
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
             }

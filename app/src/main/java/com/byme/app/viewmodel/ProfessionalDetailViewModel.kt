@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.byme.app.domain.usecase.GetUserUseCase
 import com.byme.app.domain.repository.ReviewRepositoryInterface
+import com.byme.app.domain.repository.ScheduleRepositoryInterface
+import com.byme.app.domain.repository.ServiceRepositoryInterface
 import com.byme.app.ui.state.ProfessionalDetailUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +17,9 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfessionalDetailViewModel @Inject constructor(
     private val getUserUseCase: GetUserUseCase,
-    private val reviewRepository: ReviewRepositoryInterface
+    private val reviewRepository: ReviewRepositoryInterface,
+    private val serviceRepository: ServiceRepositoryInterface,
+    private val scheduleRepository: ScheduleRepositoryInterface,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfessionalDetailUiState())
@@ -27,7 +31,9 @@ class ProfessionalDetailViewModel @Inject constructor(
             getUserUseCase(professionalId).fold(
                 onSuccess = { professional ->
                     _uiState.update { it.copy(isLoading = false, professional = professional) }
-                    loadReviews(professionalId)
+                    launch {  loadReviews(professionalId) }
+                    launch {  loadServices(professionalId) }
+                    launch {  loadSchedules(professionalId) }
                 },
                 onFailure = { error ->
                     _uiState.update {
@@ -50,6 +56,24 @@ class ProfessionalDetailViewModel @Inject constructor(
                 onFailure = { }
             )
         }
+    }
+
+    private suspend fun loadServices(userId: String) {
+        serviceRepository.getServices(userId).fold(
+            onSuccess = { services ->
+                _uiState.update { it.copy(services = services) }
+            },
+            onFailure = { }
+        )
+    }
+
+    private suspend fun loadSchedules(userId: String) {
+        scheduleRepository.getSchedules(userId).fold(
+            onSuccess = { schedules ->
+                _uiState.update { it.copy(schedules = schedules) }
+            },
+            onFailure = { }
+        )
     }
 
     fun onTabSelected(index: Int) {
