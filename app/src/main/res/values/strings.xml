@@ -37,4 +37,10 @@
     <string name="no_schedules_register">No hay horarios registrados</string>
     <string name="no_reviews_register">Aún no hay reseñas para este profesional</string>
 
+    <!-- Profile -->
+    <string name="profile">Perfil</string>
+    <string name="logout">Cerrar Sesión</string>
+    <string name="quieres_brindar_un_servicio">¿Quieres brindar un servicio?</string>
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
 </resources>

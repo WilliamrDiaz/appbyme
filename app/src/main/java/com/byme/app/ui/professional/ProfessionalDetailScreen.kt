@@ -40,6 +40,10 @@ fun ProfessionalDetailScreen(
     professionalId: String,
     onNavigateBack: () -> Unit,
     onNavigateToLogin: () -> Unit,
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToMessages: () -> Unit = {},
+    onNavigateToCalendar: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {},
     viewModel: ProfessionalDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -65,7 +69,15 @@ fun ProfessionalDetailScreen(
                 }
             )
         },
-        bottomBar = { BottomNavigationBar(onNavigateToLogin) }
+        bottomBar = {
+            BottomNavigationBar(
+                onNavigateToLogin = onNavigateToLogin,
+                onNavigateToProfile = onNavigateToProfile,
+                onNavigateToMessages = onNavigateToMessages,
+                onNavigateToCalendar = onNavigateToCalendar,
+                onNavigateToHome = onNavigateToHome
+            )
+        }
     ) { paddingValues ->
         when {
             uiState.isLoading -> {

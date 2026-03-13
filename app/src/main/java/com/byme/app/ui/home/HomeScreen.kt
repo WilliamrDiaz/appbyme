@@ -9,7 +9,11 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AllInbox
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
@@ -29,18 +33,30 @@ import coil.compose.AsyncImage
 import com.byme.app.R
 import com.byme.app.domain.model.User
 import com.byme.app.viewmodel.HomeViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun HomeScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToProfessionalDetail: (String) -> Unit,
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToMessages: () -> Unit = {},
+    onNavigateToCalendar: () -> Unit = {},
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        bottomBar = { BottomNavigationBar(onNavigateToLogin) }
+        bottomBar = {
+            BottomNavigationBar(
+                onNavigateToLogin = onNavigateToLogin,
+                onNavigateToProfile = onNavigateToProfile,
+                onNavigateToMessages = onNavigateToMessages,
+                onNavigateToCalendar = onNavigateToCalendar,
+                onNavigateToHome = { }
+            )
+        }
     ) { paddingValues ->
         LazyVerticalGrid (
             columns = GridCells.Fixed(2),
@@ -248,17 +264,47 @@ fun ProfessionalCard(
 }
 
 @Composable
-fun BottomNavigationBar(onNavigateToLogin: () -> Unit) {
+fun BottomNavigationBar(
+    onNavigateToLogin: () -> Unit,
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToMessages: () -> Unit = {},
+    onNavigateToCalendar: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {}
+) {
     NavigationBar {
         NavigationBarItem(
             selected = true,
-            onClick = { },
-            icon = { Icon(Icons.Default.Search, contentDescription = null) },
+            onClick = onNavigateToHome,
+            icon = { Icon(Icons.Default.Home, contentDescription = null) },
             label = { Text(stringResource(R.string.app_name)) }
         )
         NavigationBarItem(
             selected = false,
-            onClick = onNavigateToLogin,
+            onClick = {
+                val user = FirebaseAuth.getInstance().currentUser
+                if (user != null) onNavigateToMessages()
+                else onNavigateToLogin()
+            },
+            icon = { Icon(Icons.Default.AllInbox, contentDescription = null) },
+            label = { Text("Mensajes") }
+        )
+        NavigationBarItem(
+            selected = false,
+            onClick = {
+                val user = FirebaseAuth.getInstance().currentUser
+                if (user != null) onNavigateToCalendar()
+                else onNavigateToLogin()
+            },
+            icon = { Icon(Icons.Default.CalendarMonth, contentDescription = null) },
+            label = { Text("Calendario") }
+        )
+        NavigationBarItem(
+            selected = false,
+            onClick = {
+                val user = FirebaseAuth.getInstance().currentUser
+                if (user != null) onNavigateToProfile()
+                else onNavigateToLogin()
+            },
             icon = { Icon(Icons.Default.Person, contentDescription = null) },
             label = { Text("Perfil") }
         )

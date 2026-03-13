@@ -13,6 +13,7 @@ import com.byme.app.ui.auth.RegisterScreen
 import com.byme.app.ui.auth.SplashScreen
 import com.byme.app.ui.home.HomeScreen
 import com.byme.app.ui.professional.ProfessionalDetailScreen
+import com.byme.app.ui.profile.ProfileScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -68,7 +69,10 @@ fun NavGraph(navController: NavHostController) {
                 },
                 onNavigateToProfessionalDetail = { professionalId ->
                     navController.navigate("professional_detail/$professionalId")
-                }
+                },
+                onNavigateToProfile = { navController.navigate(NavRoutes.USER_PROFILE) },
+                onNavigateToMessages = { navController.navigate(NavRoutes.CHAT_LIST) },
+                onNavigateToCalendar = { navController.navigate(NavRoutes.CALENDAR) }
             )
         }
         composable(NavRoutes.SEARCH_RESULTS) {
@@ -82,7 +86,11 @@ fun NavGraph(navController: NavHostController) {
             ProfessionalDetailScreen(
                 professionalId = professionalId,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToLogin = { navController.navigate(NavRoutes.LOGIN) }
+                onNavigateToLogin = { navController.navigate(NavRoutes.LOGIN) },
+                onNavigateToProfile = { navController.navigate(NavRoutes.USER_PROFILE) },
+                onNavigateToMessages = { navController.navigate(NavRoutes.CHAT_LIST) },
+                onNavigateToCalendar = { navController.navigate(NavRoutes.CALENDAR) },
+                onNavigateToHome = { navController.navigate(NavRoutes.HOME) }
             )
         }
         composable(NavRoutes.CHAT_LIST) {
@@ -96,7 +104,19 @@ fun NavGraph(navController: NavHostController) {
             // CalendarScreen()
         }
         composable(NavRoutes.USER_PROFILE) {
-            // UserProfileScreen()
+            ProfileScreen(
+            onNavigateToLogin = {
+                navController.navigate(NavRoutes.LOGIN)
+            },
+            onNavigateToProfessionalProfile = {
+                navController.navigate(NavRoutes.PROFESSIONAL_PROFILE)
+            },
+           onNavigateToMessages = {
+                navController.navigate(NavRoutes.CHAT_LIST)
+           },
+           onNavigateToCalendar = { navController.navigate(NavRoutes.CALENDAR) },
+           onNavigateToHome = { navController.navigate(NavRoutes.HOME) }
+        )
         }
         composable(NavRoutes.PROFESSIONAL_PROFILE) {
             // ProfessionalProfileScreen()
