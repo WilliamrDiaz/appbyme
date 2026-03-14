@@ -32,6 +32,7 @@ import com.google.firebase.auth.FirebaseAuth
 fun ProfileScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToProfessionalProfile: () -> Unit,
+    onNavigateToAbout: () -> Unit = {},
     onNavigateToMessages: () -> Unit = {},
     onNavigateToCalendar: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
@@ -59,6 +60,13 @@ fun ProfileScreen(
                         expanded = showMenu,
                         onDismissRequest = { showMenu = false }
                     ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.about_byme)) },
+                            onClick = {
+                                showMenu = false
+                                onNavigateToAbout()
+                            }
+                        )
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.logout)) },
                             onClick = {

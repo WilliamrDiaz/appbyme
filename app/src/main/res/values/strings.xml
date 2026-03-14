@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">ByMe</string>
-    <string name="app_description">Servicios a tu alrededor</string>
+    <string name="app_slogan">Servicios a tu alrededor.</string>
 
     <!-- Auth -->
     <string name="email">Correo electrónico</string>
@@ -43,4 +43,34 @@
     <string name="quieres_brindar_un_servicio">¿Quieres brindar un servicio?</string>
     <string name="save">Guardar</string>
     <string name="cancel">Cancelar</string>
+
+    <!-- Professional Profile -->
+
+    <!--About app -->
+    <string name="description_app">ByMe es una aplicación móvil que conecta usuarios con profesionales de servicios del hogar y educación. Permite encontrar plomeros, profesores, cuidadores y más, de forma rápida y confiable en tu área.</string>
+    <string name="about_byme">Acerca de ByMe</string>
+    <string name="slogan_secondary">Conectando personas con profesionales</string>
+    <string name="app_version">Versión 1.0.0</string>
+    <string name="description">Descripción</string>
+    <string name="technologies">Tecnologías</string>
+    <string name="developed_by">Desarrollado por</string>
+    <string name="developer_1">William Rodrigo Díaz Maca</string>
+    <string name="developer_2">Carlos Santiago Balcázar Ardila</string>
+    <string name="university">Universidad del Cauca</string>
+    <string name="name_elective">Desarrollo de Aplicaciones Para Dispositivos Moviles</string>
+    <string name="teacher_name">Cristhian Nicolas Figueroa Martinez</string>
+    <string name="developed_year">2026 - 1</string>
+    <string name="acamedic_info">Información Académica</string>
+
+    <string-array name="technologies_list">
+        <item>Jetpack Compose</item>
+        <item>Firebase Firestore</item>
+        <item>Firebase Authentication</item>
+        <item>Clean Architecture</item>
+        <item>Hilt</item>
+        <item>MVVM</item>
+        <item>Room</item>
+        <item>Navigation Component</item>
+    </string-array>
+
 </resources>

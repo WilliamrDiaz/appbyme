@@ -70,7 +70,7 @@ fun LoginScreen(
             color = MaterialTheme.colorScheme.primary
         )
         Text(
-            text = stringResource(R.string.app_description),
+            text = stringResource(R.string.app_slogan),
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(bottom = 40.dp)

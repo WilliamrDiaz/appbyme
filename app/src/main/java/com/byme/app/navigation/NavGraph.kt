@@ -8,6 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.byme.app.ui.about.AboutScreen
 import com.byme.app.ui.auth.LoginScreen
 import com.byme.app.ui.auth.RegisterScreen
 import com.byme.app.ui.auth.SplashScreen
@@ -105,17 +106,12 @@ fun NavGraph(navController: NavHostController) {
         }
         composable(NavRoutes.USER_PROFILE) {
             ProfileScreen(
-            onNavigateToLogin = {
-                navController.navigate(NavRoutes.LOGIN)
-            },
-            onNavigateToProfessionalProfile = {
-                navController.navigate(NavRoutes.PROFESSIONAL_PROFILE)
-            },
-           onNavigateToMessages = {
-                navController.navigate(NavRoutes.CHAT_LIST)
-           },
-           onNavigateToCalendar = { navController.navigate(NavRoutes.CALENDAR) },
-           onNavigateToHome = { navController.navigate(NavRoutes.HOME) }
+            onNavigateToLogin = { navController.navigate(NavRoutes.LOGIN) },
+            onNavigateToProfessionalProfile = { navController.navigate(NavRoutes.PROFESSIONAL_PROFILE) },
+            onNavigateToAbout = { navController.navigate(NavRoutes.ABOUT) },
+            onNavigateToMessages = { navController.navigate(NavRoutes.CHAT_LIST) },
+            onNavigateToCalendar = { navController.navigate(NavRoutes.CALENDAR) },
+            onNavigateToHome = { navController.navigate(NavRoutes.HOME) }
         )
         }
         composable(NavRoutes.PROFESSIONAL_PROFILE) {
@@ -125,7 +121,9 @@ fun NavGraph(navController: NavHostController) {
             // OfferServiceScreen()
         }
         composable(NavRoutes.ABOUT) {
-            // AboutScreen()
+            AboutScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
     }
 }
