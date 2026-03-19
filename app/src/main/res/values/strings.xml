@@ -45,6 +45,21 @@
     <string name="cancel">Cancelar</string>
 
     <!-- Professional Profile -->
+    <string name="professional_profile_title">Perfil Profesional</string>
+    <string name="professional_profile_name">Nombre</string>
+    <string name="professional_profile_lastname">Apellido</string>
+    <string name="professional_profile_description">Descripción</string>
+    <string name="professional_profile_services">Servicios</string>
+    <string name="professional_profile_no_services">No hay servicios agregados</string>
+    <string name="professional_profile_schedules">Horarios</string>
+    <string name="professional_profile_no_schedules">No hay horarios agregados</string>
+    <string name="professional_profile_add_service">Agregar servicio</string>
+    <string name="professional_profile_add_schedule">Agregar horario</string>
+    <string name="professional_profile_service_name">Nombre del servicio</string>
+    <string name="professional_profile_service_description">Descripción del servicio</string>
+    <string name="professional_profile_schedule_day">Selecciona el día</string>
+    <string name="professional_profile_schedule_start">Inicio</string>
+    <string name="professional_profile_schedule_end">Fin</string>
 
     <!--About app -->
     <string name="description_app">ByMe es una aplicación móvil que conecta usuarios con profesionales de servicios del hogar y educación. Permite encontrar plomeros, profesores, cuidadores y más, de forma rápida y confiable en tu área.</string>

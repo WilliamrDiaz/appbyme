@@ -36,12 +36,17 @@ class ServiceRepositoryImpl(
         userId: String,
         service: Service
     ): Result<Unit> {
+        val serviceMap = hashMapOf(
+            "name" to service.name,
+            "description" to service.description
+        )
+
         return try {
             firestore
                 .collection("users")
                 .document(userId)
                 .collection("services")
-                .add(service)
+                .add(serviceMap)
                 .await()
             Result.success(Unit)
         } catch (e: Exception) {

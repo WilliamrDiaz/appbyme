@@ -66,7 +66,7 @@ class OfferServiceViewModel @Inject constructor(
     fun onEndTimeSelected(time: String) = _uiState.update { it.copy(selectedEndTime = time) }
 
     fun addService(name: String, description: String) {
-        val newService = Service(name = name, description = description)
+        val newService = Service(name = name, description = description,)
         _uiState.update { it.copy(services = it.services + newService) }
     }
 
@@ -90,7 +90,7 @@ class OfferServiceViewModel @Inject constructor(
                 }
             }
         } else {
-            // Día nuevo — crear nuevo Schedule
+            // Día nuevo
             state.schedules + Schedule(day = state.selectedDay, hours = hours)
         }
         _uiState.update {
@@ -132,7 +132,8 @@ class OfferServiceViewModel @Inject constructor(
                         isProfessional = true,
                         category = state.selectedCategory,
                         experience = state.selectedExperience,
-                        description = state.description
+                        description = state.description,
+                        role = "professional",
                     )
                     userRepository.updateUser(updatedUser).fold(
                         onSuccess = {

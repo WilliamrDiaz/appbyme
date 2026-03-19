@@ -34,12 +34,17 @@ class ScheduleRepositoryImpl (
     }
 
     override suspend fun addSchedule(userId: String, schedule: Schedule): Result<Unit> {
+        val scheduleMap = hashMapOf(
+            "day" to schedule.day,
+            "hours" to schedule.hours
+        )
+
         return try {
             firestore
                 .collection("users")
                 .document(userId)
                 .collection("schedules")
-                .add(schedule)
+                .add(scheduleMap)
                 .await()
             Result.success(Unit)
         } catch (e: Exception) {

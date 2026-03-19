@@ -1,5 +1,6 @@
 package com.byme.app.di
 
+import android.content.Context
 import com.byme.app.data.remote.repository.AppointmentRepositoryImpl
 import com.byme.app.data.remote.repository.CategoryRepositoryImpl
 import com.byme.app.data.remote.repository.ChatRepositoryImpl
@@ -30,6 +31,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import androidx.room.Room
+import com.byme.app.data.local.dao.UserDao
+import com.byme.app.data.local.database.ByMeDatabase
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -53,9 +58,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideUserRepository(
-        firestore: FirebaseFirestore
+        firestore: FirebaseFirestore,
+        userDao: UserDao
     ): UserRepositoryInterface {
-        return UserRepositoryImpl(firestore)
+        return UserRepositoryImpl(firestore, userDao)
     }
 
     @Provides
@@ -164,5 +170,22 @@ object AppModule {
         chatRepository: ChatRepositoryInterface
     ): GetMessagesUseCase {
         return GetMessagesUseCase(chatRepository)
+    }
+
+    // Inyección de dependencias para Room
+    @Provides
+    @Singleton
+    fun provideByMeDatabase(@ApplicationContext context: Context): ByMeDatabase {
+        return Room.databaseBuilder(
+            context,
+            ByMeDatabase::class.java,
+            "byme_database"
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserDao(database: ByMeDatabase): UserDao {
+        return database.userDao()
     }
 }

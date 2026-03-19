@@ -2,12 +2,26 @@ package com.byme.app.navigation
 
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.room.Room
+import com.byme.app.data.local.database.ByMeDatabase
+import com.byme.app.data.local.entity.UserEntity
 import com.byme.app.ui.about.AboutScreen
 import com.byme.app.ui.auth.LoginScreen
 import com.byme.app.ui.auth.RegisterScreen
@@ -15,7 +29,10 @@ import com.byme.app.ui.auth.SplashScreen
 import com.byme.app.ui.home.HomeScreen
 import com.byme.app.ui.professional.OfferServiceScreen
 import com.byme.app.ui.professional.ProfessionalDetailScreen
+import com.byme.app.ui.professional.ProfessionalProfileScreen
 import com.byme.app.ui.profile.ProfileScreen
+import com.byme.app.viewmodel.UserTypeViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -106,17 +123,44 @@ fun NavGraph(navController: NavHostController) {
             // CalendarScreen()
         }
         composable(NavRoutes.USER_PROFILE) {
-            ProfileScreen(
-            onNavigateToLogin = { navController.navigate(NavRoutes.LOGIN) },
-            onNavigateToProfessionalProfile = { navController.navigate(NavRoutes.OFFER_SERVICE) },
-            onNavigateToAbout = { navController.navigate(NavRoutes.ABOUT) },
-            onNavigateToMessages = { navController.navigate(NavRoutes.CHAT_LIST) },
-            onNavigateToCalendar = { navController.navigate(NavRoutes.CALENDAR) },
-            onNavigateToHome = { navController.navigate(NavRoutes.HOME) }
-        )
+            val userTypeViewModel: UserTypeViewModel = hiltViewModel()
+            val isProfessional by userTypeViewModel.isProfessional.collectAsState()
+
+            when (isProfessional) {
+                null -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+                true -> {
+                    ProfessionalProfileScreen(
+                        onNavigateBack = { navController.popBackStack() },
+                        onNavigateToLogin = { navController.navigate(NavRoutes.LOGIN) },
+                        onNavigateToHome = { navController.navigate(NavRoutes.HOME) },
+                        onNavigateToMessages = { navController.navigate(NavRoutes.CHAT_LIST) },
+                        onNavigateToCalendar = { navController.navigate(NavRoutes.CALENDAR) }
+                    )
+                }
+                false -> {
+                    ProfileScreen(
+                        onNavigateToLogin = { navController.navigate(NavRoutes.LOGIN) },
+                        onNavigateToProfessionalProfile = { navController.navigate(NavRoutes.OFFER_SERVICE) },
+                        onNavigateToAbout = { navController.navigate(NavRoutes.ABOUT) },
+                        onNavigateToMessages = { navController.navigate(NavRoutes.CHAT_LIST) },
+                        onNavigateToCalendar = { navController.navigate(NavRoutes.CALENDAR) },
+                        onNavigateToHome = { navController.navigate(NavRoutes.HOME) }
+                    )
+                }
+            }
         }
         composable(NavRoutes.PROFESSIONAL_PROFILE) {
-            // ProfessionalProfileScreen()
+            ProfessionalProfileScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToLogin = { navController.navigate(NavRoutes.LOGIN) },
+                onNavigateToHome = { navController.navigate(NavRoutes.HOME) },
+                onNavigateToMessages = { navController.navigate(NavRoutes.CHAT_LIST) },
+                onNavigateToCalendar = { navController.navigate(NavRoutes.CALENDAR) }
+            )
         }
         composable(NavRoutes.OFFER_SERVICE) {
             OfferServiceScreen(

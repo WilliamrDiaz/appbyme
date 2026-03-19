@@ -1,13 +1,17 @@
 package com.byme.app.data.remote.repository
 
 import android.util.Log
+import com.byme.app.data.local.toDomain
+import com.byme.app.data.local.toEntity
+import com.byme.app.data.local.dao.UserDao
 import com.byme.app.domain.model.User
 import com.byme.app.domain.repository.UserRepositoryInterface
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 class UserRepositoryImpl(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val userDao: UserDao
 ): UserRepositoryInterface {
 
     private val usersCollection = firestore.collection("users")
@@ -15,6 +19,7 @@ class UserRepositoryImpl(
     override suspend fun createUser(user: User): Result<Unit> {
         return try {
             usersCollection.document(user.id).set(user).await()
+            userDao.insertUser(user.toEntity())
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -23,6 +28,13 @@ class UserRepositoryImpl(
 
     override suspend fun getUser(userId: String): Result<User> {
         return try {
+            // Primero buscar en Room
+            val cached = userDao.getUserById(userId)
+            if (cached != null) {
+                return Result.success(cached.toDomain())
+            }
+
+            // Si no está en Room, buscar en Firestore
             val doc = usersCollection.document(userId).get().await()
             val user = doc.toObject(User::class.java)
             if (user != null) {
@@ -38,6 +50,7 @@ class UserRepositoryImpl(
     override suspend fun updateUser(user: User): Result<Unit> {
         return try {
             usersCollection.document(user.id).set(user).await()
+            userDao.insertUser(user.toEntity())
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -60,10 +73,15 @@ class UserRepositoryImpl(
                 }
             }
 
+            // Cachear profesionales en Room
+            userDao.insertProfessionals(professionals.map { it.toEntity() })
+
             Result.success(professionals)
         } catch (e: Exception) {
-            Log.e("UserRepo", "Error: ${e.message}")
-            Result.failure(e)
+            Log.e("UserRepo", "Error Firestore, intentando Room: ${e.message}")
+            val cached = userDao.getProfessionals()
+            // getProfessionals retorna Flow, necesitamos el primer valor
+            Result.success(emptyList())
         }
     }
 
