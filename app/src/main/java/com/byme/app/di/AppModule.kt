@@ -1,12 +1,14 @@
 package com.byme.app.di
 
 import com.byme.app.data.remote.repository.AppointmentRepositoryImpl
+import com.byme.app.data.remote.repository.CategoryRepositoryImpl
 import com.byme.app.data.remote.repository.ChatRepositoryImpl
 import com.byme.app.data.remote.repository.ReviewRepositoryImpl
 import com.byme.app.data.remote.repository.ScheduleRepositoryImpl
 import com.byme.app.data.remote.repository.ServiceRepositoryImpl
 import com.byme.app.data.remote.repository.UserRepositoryImpl
 import com.byme.app.domain.repository.AppointmentRepositoryInterface
+import com.byme.app.domain.repository.CategoryRepositoryInterface
 import com.byme.app.domain.repository.ChatRepositoryInterface
 import com.byme.app.domain.repository.ReviewRepositoryInterface
 import com.byme.app.domain.repository.ScheduleRepositoryInterface
@@ -90,6 +92,12 @@ object AppModule {
     @Singleton
     fun provideScheduleRepository(firestore: FirebaseFirestore): ScheduleRepositoryInterface {
         return ScheduleRepositoryImpl(firestore)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCategoryRepository(firestore: FirebaseFirestore): CategoryRepositoryInterface {
+        return CategoryRepositoryImpl(firestore)
     }
 
     // Inyeccion de dependencias para Casos de uso

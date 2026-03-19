@@ -73,4 +73,28 @@
         <item>Navigation Component</item>
     </string-array>
 
+    <!-- Offer Service Screen -->
+    <string name="offer_service_title">Prestar Servicio</string>
+    <string name="offer_service_category_question">¿Qué servicio quieres brindar?</string>
+    <string name="offer_service_category_placeholder">Selecciona una categoría</string>
+    <string name="offer_service_experience_question">¿Cuánta experiencia tienes?</string>
+    <string name="offer_service_experience_placeholder">Selecciona tu experiencia</string>
+    <string name="offer_service_description_label">Descripción</string>
+    <string name="offer_service_description_placeholder">Cuéntanos sobre ti y tu servicio</string>
+    <string name="offer_service_services_label">Servicios</string>
+    <string name="offer_service_no_services">No hay servicios agregados aún</string>
+    <string name="offer_service_schedules_label">Horarios</string>
+    <string name="offer_service_weekdays_placeholder">Lunes - Viernes  ej: 8:00 - 12:00</string>
+    <string name="offer_service_saturday_placeholder">Sábados  ej: 8:00 - 12:00</string>
+    <string name="offer_service_sunday_placeholder">Domingos y festivos  ej: Fuera de servicio</string>
+    <string name="offer_service_title_question">¿Tienes un título en tu profesión?</string>
+    <string name="offer_service_upload_file">Subir archivo</string>
+    <string name="offer_service_coming_soon">Próximamente</string>
+    <string name="offer_service_save">Guardar</string>
+    <string name="offer_service_cancel">Cancelar</string>
+    <string name="offer_service_add_service_dialog_title">Agregar servicio</string>
+    <string name="offer_service_service_name_placeholder">Nombre del servicio</string>
+    <string name="offer_service_service_description_placeholder">Descripción</string>
+    <string name="offer_service_add">Agregar</string>
+    <string name="add_schedule">Agregar horario</string>
 </resources>

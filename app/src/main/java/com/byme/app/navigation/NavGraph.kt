@@ -13,6 +13,7 @@ import com.byme.app.ui.auth.LoginScreen
 import com.byme.app.ui.auth.RegisterScreen
 import com.byme.app.ui.auth.SplashScreen
 import com.byme.app.ui.home.HomeScreen
+import com.byme.app.ui.professional.OfferServiceScreen
 import com.byme.app.ui.professional.ProfessionalDetailScreen
 import com.byme.app.ui.profile.ProfileScreen
 
@@ -107,7 +108,7 @@ fun NavGraph(navController: NavHostController) {
         composable(NavRoutes.USER_PROFILE) {
             ProfileScreen(
             onNavigateToLogin = { navController.navigate(NavRoutes.LOGIN) },
-            onNavigateToProfessionalProfile = { navController.navigate(NavRoutes.PROFESSIONAL_PROFILE) },
+            onNavigateToProfessionalProfile = { navController.navigate(NavRoutes.OFFER_SERVICE) },
             onNavigateToAbout = { navController.navigate(NavRoutes.ABOUT) },
             onNavigateToMessages = { navController.navigate(NavRoutes.CHAT_LIST) },
             onNavigateToCalendar = { navController.navigate(NavRoutes.CALENDAR) },
@@ -118,7 +119,14 @@ fun NavGraph(navController: NavHostController) {
             // ProfessionalProfileScreen()
         }
         composable(NavRoutes.OFFER_SERVICE) {
-            // OfferServiceScreen()
+            OfferServiceScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onSaveSuccess = {
+                    navController.navigate(NavRoutes.HOME) {
+                        popUpTo(NavRoutes.OFFER_SERVICE) { inclusive = true }
+                    }
+                }
+            )
         }
         composable(NavRoutes.ABOUT) {
             AboutScreen(
