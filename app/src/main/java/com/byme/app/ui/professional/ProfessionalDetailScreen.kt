@@ -40,6 +40,7 @@ fun ProfessionalDetailScreen(
     professionalId: String,
     onNavigateBack: () -> Unit,
     onNavigateToLogin: () -> Unit,
+    onNavigateToChat: (String, String) -> Unit = { _, _ -> },
     onNavigateToProfile: () -> Unit = {},
     onNavigateToMessages: () -> Unit = {},
     onNavigateToCalendar: () -> Unit = {},
@@ -98,8 +99,12 @@ fun ProfessionalDetailScreen(
                         selectedTab = uiState.selectedTab,
                         onTabSelected = { viewModel.onTabSelected(it) },
                         onContactClick = {
-                            if (FirebaseAuth.getInstance().currentUser != null) {
-                                // TODO: navegar al chat
+                            val currentUser = FirebaseAuth.getInstance().currentUser
+                            if (currentUser != null) {
+                                val professional = uiState.professional!!
+                                val chatId = "${currentUser.uid}_${professional.id}"
+
+                                onNavigateToChat(chatId, "${professional.name} ${professional.lastname}")
                             } else {
                                 onNavigateToLogin()
                             }

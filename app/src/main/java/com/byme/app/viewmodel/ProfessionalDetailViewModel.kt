@@ -2,6 +2,7 @@ package com.byme.app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.byme.app.domain.repository.ChatRepositoryInterface
 import com.byme.app.domain.usecase.GetUserUseCase
 import com.byme.app.domain.repository.ReviewRepositoryInterface
 import com.byme.app.domain.repository.ScheduleRepositoryInterface
@@ -20,6 +21,7 @@ class ProfessionalDetailViewModel @Inject constructor(
     private val reviewRepository: ReviewRepositoryInterface,
     private val serviceRepository: ServiceRepositoryInterface,
     private val scheduleRepository: ScheduleRepositoryInterface,
+    private val chatRepository: ChatRepositoryInterface,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfessionalDetailUiState())
@@ -78,5 +80,16 @@ class ProfessionalDetailViewModel @Inject constructor(
 
     fun onTabSelected(index: Int) {
         _uiState.update { it.copy(selectedTab = index) }
+    }
+
+    fun createOrGetChat(
+        userId: String,
+        professionalId: String,
+        userName: String,
+        professionalName: String
+    ) {
+        viewModelScope.launch {
+            chatRepository.getOrCreateChat(userId, professionalId, userName, professionalName)
+        }
     }
 }

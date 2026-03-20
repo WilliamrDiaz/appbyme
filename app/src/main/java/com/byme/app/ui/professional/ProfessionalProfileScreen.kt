@@ -26,15 +26,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.byme.app.R
 import com.byme.app.ui.home.BottomNavigationBar
 import com.byme.app.viewmodel.ProfessionalProfileViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfessionalProfileScreen(
-    onNavigateBack: () -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToHome: () -> Unit = {},
     onNavigateToMessages: () -> Unit = {},
     onNavigateToCalendar: () -> Unit = {},
+    onNavigateToAbout: () -> Unit = {},
     viewModel: ProfessionalProfileViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -55,14 +56,30 @@ fun ProfessionalProfileScreen(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.professional_profile_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
-                    }
-                },
                 actions = {
-                    IconButton(onClick = { }) {
+                    var showMenu by remember { mutableStateOf(false) }
+                    IconButton(onClick = { showMenu = true }) {
                         Icon(Icons.Default.MoreVert, contentDescription = null)
+                    }
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.about_byme)) },
+                            onClick = {
+                                showMenu = false
+                                onNavigateToAbout()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.logout)) },
+                            onClick = {
+                                FirebaseAuth.getInstance().signOut()
+                                showMenu = false
+                                onNavigateToLogin()
+                            }
+                        )
                     }
                 }
             )

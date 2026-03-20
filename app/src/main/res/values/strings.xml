@@ -112,4 +112,12 @@
     <string name="offer_service_service_description_placeholder">Descripción</string>
     <string name="offer_service_add">Agregar</string>
     <string name="add_schedule">Agregar horario</string>
+
+    <!-- Chat -->
+    <string name="messages">Mensajes</string>
+    <string name="no_conversations">No tienes conversaciones aún</string>
+    <string name="no_conversations_hint">Contacta a un profesional para empezar</string>
+    <string name="no_messages_yet">Sin mensajes aún</string>
+    <string name="draft">Borrador: </string>
+    <string name="type_message">Escribe un mensaje...</string>
 </resources>

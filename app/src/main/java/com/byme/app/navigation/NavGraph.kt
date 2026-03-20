@@ -8,31 +8,26 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import androidx.room.Room
-import com.byme.app.data.local.database.ByMeDatabase
-import com.byme.app.data.local.entity.UserEntity
 import com.byme.app.ui.about.AboutScreen
 import com.byme.app.ui.auth.LoginScreen
 import com.byme.app.ui.auth.RegisterScreen
 import com.byme.app.ui.auth.SplashScreen
+import com.byme.app.ui.chat.ChatDetailScreen
+import com.byme.app.ui.chat.ChatListScreen
 import com.byme.app.ui.home.HomeScreen
 import com.byme.app.ui.professional.OfferServiceScreen
 import com.byme.app.ui.professional.ProfessionalDetailScreen
 import com.byme.app.ui.professional.ProfessionalProfileScreen
 import com.byme.app.ui.profile.ProfileScreen
 import com.byme.app.viewmodel.UserTypeViewModel
-import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -106,6 +101,9 @@ fun NavGraph(navController: NavHostController) {
                 professionalId = professionalId,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToLogin = { navController.navigate(NavRoutes.LOGIN) },
+                onNavigateToChat = { chatId, professionalName ->
+                    navController.navigate("chat_detail/$chatId?professionalName=$professionalName")
+                },
                 onNavigateToProfile = { navController.navigate(NavRoutes.USER_PROFILE) },
                 onNavigateToMessages = { navController.navigate(NavRoutes.CHAT_LIST) },
                 onNavigateToCalendar = { navController.navigate(NavRoutes.CALENDAR) },
@@ -113,11 +111,33 @@ fun NavGraph(navController: NavHostController) {
             )
         }
         composable(NavRoutes.CHAT_LIST) {
-            // ChatListScreen()
+            ChatListScreen(
+                onNavigateToChat = { chatId, professionalName ->
+                    navController.navigate("chat_detail/$chatId?professionalName=$professionalName")
+                },
+                onNavigateToLogin = { navController.navigate(NavRoutes.LOGIN) },
+                onNavigateToProfile = { navController.navigate(NavRoutes.USER_PROFILE) },
+                onNavigateToCalendar = { navController.navigate(NavRoutes.CALENDAR) },
+                onNavigateToHome = { navController.navigate(NavRoutes.HOME) }
+            )
         }
-        composable(NavRoutes.CHAT_DETAIL) { backStackEntry ->
-            val chatId = backStackEntry.arguments?.getString("chatId")
-            // ChatDetailScreen(chatId)
+        composable(
+            route = "chat_detail/{chatId}?professionalName={professionalName}",
+            arguments = listOf(
+                navArgument("chatId") { type = NavType.StringType },
+                navArgument("professionalName") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )
+        ) { backStackEntry ->
+            val chatId = backStackEntry.arguments?.getString("chatId") ?: ""
+            val professionalName = backStackEntry.arguments?.getString("professionalName") ?: ""
+            ChatDetailScreen(
+                chatId = chatId,
+                professionalName = professionalName,
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
         composable(NavRoutes.CALENDAR) {
             // CalendarScreen()
@@ -134,8 +154,8 @@ fun NavGraph(navController: NavHostController) {
                 }
                 true -> {
                     ProfessionalProfileScreen(
-                        onNavigateBack = { navController.popBackStack() },
                         onNavigateToLogin = { navController.navigate(NavRoutes.LOGIN) },
+                        onNavigateToAbout = { navController.navigate(NavRoutes.ABOUT) },
                         onNavigateToHome = { navController.navigate(NavRoutes.HOME) },
                         onNavigateToMessages = { navController.navigate(NavRoutes.CHAT_LIST) },
                         onNavigateToCalendar = { navController.navigate(NavRoutes.CALENDAR) }
@@ -155,8 +175,8 @@ fun NavGraph(navController: NavHostController) {
         }
         composable(NavRoutes.PROFESSIONAL_PROFILE) {
             ProfessionalProfileScreen(
-                onNavigateBack = { navController.popBackStack() },
                 onNavigateToLogin = { navController.navigate(NavRoutes.LOGIN) },
+                onNavigateToAbout = { navController.navigate(NavRoutes.ABOUT) },
                 onNavigateToHome = { navController.navigate(NavRoutes.HOME) },
                 onNavigateToMessages = { navController.navigate(NavRoutes.CHAT_LIST) },
                 onNavigateToCalendar = { navController.navigate(NavRoutes.CALENDAR) }

@@ -15,6 +15,41 @@ class ChatRepositoryImpl(
 ): ChatRepositoryInterface {
 
     private val chatsCollection = firestore.collection("chats")
+    override suspend fun getOrCreateChat(
+        userId: String,
+        professionalId: String,
+        userName: String,
+        professionalName: String
+    ): Result<Chat> {
+        return try {
+            // ID determinístico
+            val chatId = "${userId}_${professionalId}"
+            val docRef = chatsCollection.document(chatId)
+            val doc = docRef.get().await()
+
+            if (doc.exists()) {
+                // Ya existe el chat
+                val chat = doc.toObject(Chat::class.java)!!.copy(id = doc.id)
+                Result.success(chat)
+            } else {
+                // Crear nuevo chat
+                val newChat = Chat(
+                    id = chatId,
+                    userId = userId,
+                    professionalId = professionalId,
+                    userName = userName,
+                    professionalName = professionalName,
+                    lastMessage = "",
+                    lastMessageTime = System.currentTimeMillis(),
+                    unreadCount = 0
+                )
+                docRef.set(newChat).await()
+                Result.success(newChat)
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
     override suspend fun createChat(chat: Chat): Result<String> {
         return try {
@@ -27,20 +62,36 @@ class ChatRepositoryImpl(
 
     override suspend fun getChats(userId: String): Flow<List<Chat>> {
         return callbackFlow {
-            val listener = chatsCollection
+            val combined = mutableMapOf<String, Chat>()
+
+            val listenerUser = chatsCollection
                 .whereEqualTo("userId", userId)
-                .orderBy("lastMessageTime", Query.Direction.DESCENDING)
                 .addSnapshotListener { snapshot, error ->
-                    if (error != null) {
-                        close(error)
-                        return@addSnapshotListener
+                    if (error != null) return@addSnapshotListener
+                    snapshot?.documents?.mapNotNull { doc ->
+                        doc.toObject(Chat::class.java)?.copy(id = doc.id)
+                    }?.forEach { chat ->
+                        combined[chat.id] = chat
                     }
-                    val chats = snapshot?.documents?.map { doc ->
-                        doc.toObject(Chat::class.java)!!.copy(id = doc.id)
-                    } ?: emptyList()
-                    trySend(chats)
+                    trySend(combined.values.sortedByDescending { it.lastMessageTime })
                 }
-            awaitClose { listener.remove() }
+
+            val listenerProfessional = chatsCollection
+                .whereEqualTo("professionalId", userId)
+                .addSnapshotListener { snapshot, error ->
+                    if (error != null) return@addSnapshotListener
+                    snapshot?.documents?.mapNotNull { doc ->
+                        doc.toObject(Chat::class.java)?.copy(id = doc.id)
+                    }?.forEach { chat ->
+                        combined[chat.id] = chat
+                    }
+                    trySend(combined.values.sortedByDescending { it.lastMessageTime })
+                }
+
+            awaitClose {
+                listenerUser.remove()
+                listenerProfessional.remove()
+            }
         }
     }
 
